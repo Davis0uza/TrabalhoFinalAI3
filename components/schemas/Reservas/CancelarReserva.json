@@ -1,0 +1,9 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Cancelar Reserva",
+  "type": "object",
+  "properties": {
+    "reservation_id": { "type": "string" }
+  },
+  "required": ["reservation_id"]
+}

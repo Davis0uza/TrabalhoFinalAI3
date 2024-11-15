@@ -1,0 +1,8 @@
+{
+  "reservation_id": "string",
+  "room_id": "string",
+  "date": "YYYY-MM-DD",
+  "start_time": "HH:MM",
+  "end_time": "HH:MM",
+  "description": "string"
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Consulta de Reservas por Utilizador",
+  "type": "object",
+  "properties": {
+    "user_id": { "type": "string" },
+    "date_range": {
+      "type": "object",
+      "properties": {
+        "start_date": { "type": "string", "format": "date" },
+        "end_date": { "type": "string", "format": "date" }
+      },
+      "required": ["start_date", "end_date"]
+    }
+  },
+  "required": ["user_id", "date_range"]
+}

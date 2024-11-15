@@ -1,0 +1,260 @@
+openapi: 3.0.0
+info:
+  title: Sistema de Reserva de Salas Online
+  version: 1.0.0
+  description: API para reservas de salas.
+servers:
+  - url: https://api.sistemareserva.com/v1
+paths:
+
+  /users/register:
+    post:
+      summary: Registro
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Users/RegistroUser'
+      responses:
+        '201':
+          description: Utilizador criado com sucesso!
+        '400':
+          description: Erro ao criar
+
+  /users/recover-password:
+    post:
+      summary: Recuperar Password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Users/RecuperarPassword'
+      responses:
+        '200':
+          description: E-mail de recuperação enviado
+        '404':
+          description: Erro ao recuperar password
+
+  /users/login:
+    post:
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Users/Login'
+      responses:
+        '200':
+          description: Login bem-sucedido
+        '401':
+          description: Credenciais inválidas
+
+  /newreservation:
+    post:
+      summary: Reservar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservas/Reservar'
+      responses:
+        '201':
+          description: Reserva criada com sucesso
+        '409':
+          description: Conflito de horário - reserva já existente
+
+  /reservations:
+    get:
+      summary: Consulta de reservas por sala e data
+      parameters:
+        - name: room_id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Lista de reservas
+
+  /reservations/user:
+    get:
+      summary: Consulta de reservas do utilizador
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: start_date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Lista de reservas do utilizador
+
+  /reservations/{reservation_id}:
+    put:
+      summary: Editar reserva
+      parameters:
+        - name: reservation_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservas/EditarReservas'
+      responses:
+        '200':
+          description: Reserva atualizada com sucesso
+
+  /reservations/cancell/{reservation_id}:
+    delete:
+      summary: Cancelar uma reserva
+      parameters:
+        - name: reservation_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Reserva cancelada com sucesso
+
+  /rooms:
+    post:
+      summary: Criar nova sala
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Salas/NovaSala'
+      responses:
+        '201':
+          description: Sala criada com sucesso!
+
+   /rooms/{room_id}:
+    put:
+      summary: Edição de uma sala
+      parameters:
+        - name: room_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Salas/EditarSala'
+      responses:
+        '200':
+          description: Sala atualizada com sucesso
+
+  /rooms/remove/{room_id}:
+    delete:
+      summary: Remoção de uma sala
+      parameters:
+        - name: room_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Sala removida com sucesso
+
+components:
+  schemas:
+    UserRegistration:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 3
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+      required:
+        - username
+        - email
+        - password
+
+    PasswordRecovery:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+        - email
+
+    UserLogin:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+      required:
+        - email
+        - password
+
+        ReservationCreation:
+      type: object
+      properties:
+        room_id:
+          type: string
+        user_id:
+          type: string
+        date:
+          type: string
+          format: date
+        start_time:
+          type: string
+          pattern: "^([01]?[0-9]|2[0-3]):[0-5][0-9]$"
+        end_time:
+          type: string
+          pattern: "^([01]?[0-9]|2[0-3]):[0-5][0-9]$"
+        description:
+          type: string
+          maxLength: 255
+      required:
+        - room_id
+        - user_id
+        - date
+        - start_time
+        - end_time
+
+
+
+
