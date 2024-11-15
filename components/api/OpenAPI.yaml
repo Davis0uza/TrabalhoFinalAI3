@@ -1,73 +1,73 @@
 openapi: 3.0.0
 info:
-  title: Sistema de Reserva de Salas Online
+  title: Reserva de Salas
   version: 1.0.0
-  description: API para reservas de salas.
+  description: API para reserva de salas
 servers:
   - url: https://api.sistemareserva.com/v1
 paths:
 
-  /users/register:
+  /Users/Registar:
     post:
-      summary: Registro
+      summary: Registo de um novo Utilizador
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Users/RegistroUser'
+              $ref: '#/components/schemas/Registro'
       responses:
         '201':
-          description: Utilizador criado com sucesso!
+          description: Utilizador criado com sucesso
         '400':
-          description: Erro ao criar
+          description: Requisição inválida
 
-  /users/recover-password:
+  /Users/Login:
     post:
-      summary: Recuperar Password
+      summary: Login de Utilizador
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Users/RecuperarPassword'
-      responses:
-        '200':
-          description: E-mail de recuperação enviado
-        '404':
-          description: Erro ao recuperar password
-
-  /users/login:
-    post:
-      summary: Login
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Users/Login'
+              $ref: '#/components/schemas/Login'
       responses:
         '200':
           description: Login bem-sucedido
         '401':
-          description: Credenciais inválidas
+          description: Dados inválidas
 
-  /newreservation:
+  /Users/Recuperar-password:
     post:
-      summary: Reservar
+      summary: Recuperar a password através do email
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Reservas/Reservar'
+              $ref: '#/components/schemas/RecuperarPassword'
+      responses:
+        '200':
+          description: E-mail de recuperação enviado
+        '404':
+          description: Utilizador não encontrado
+
+  /Reservas/Reservar:
+    post:
+      summary: Adicionar uma nova reserva
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservar'
       responses:
         '201':
           description: Reserva criada com sucesso
         '409':
           description: Conflito de horário - reserva já existente
 
-  /reservations:
+  /Reservas/ConsultaSalaData:
     get:
       summary: Consulta de reservas por sala e data
       parameters:
@@ -86,7 +86,7 @@ paths:
         '200':
           description: Lista de reservas
 
-  /reservations/user:
+  /Reservas/ConsultaUser:
     get:
       summary: Consulta de reservas do utilizador
       parameters:
@@ -109,11 +109,11 @@ paths:
             format: date
       responses:
         '200':
-          description: Lista de reservas do utilizador
+          description: Lista de reservas do Utilizador
 
-  /reservations/{reservation_id}:
+  /Reservas/EditarReservas/{reservation_id}:
     put:
-      summary: Editar reserva
+      summary: Editar uma reserva
       parameters:
         - name: reservation_id
           in: path
@@ -125,14 +125,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Reservas/EditarReservas'
+              $ref: '#/components/schemas/EditarReservas'
       responses:
         '200':
           description: Reserva atualizada com sucesso
+        '404':
+          description: Reserva não encontrada
+        '409':
+          description: Conflito de horário - reserva já existente
 
-  /reservations/cancell/{reservation_id}:
+ 
+  /Reservas/CancelarReserva/{reservation_id}:
     delete:
-      summary: Cancelar uma reserva
+      summary: Cancelamento de uma reserva
       parameters:
         - name: reservation_id
           in: path
@@ -142,23 +147,29 @@ paths:
       responses:
         '204':
           description: Reserva cancelada com sucesso
+        '404':
+          description: Reserva não encontrada
 
-  /rooms:
+
+  /Salas/NovaSala:
     post:
-      summary: Criar nova sala
+      summary: Criação de uma nova sala
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Salas/NovaSala'
+              $ref: '#/components/schemas/NovaSala'
       responses:
         '201':
-          description: Sala criada com sucesso!
+          description: Sala criada com sucesso
+        '400':
+          description: Requisição inválida
 
-   /rooms/{room_id}:
+
+  /Salas/EditarSala/{room_id}:
     put:
-      summary: Edição de uma sala
+      summary: Editar uma sala
       parameters:
         - name: room_id
           in: path
@@ -170,14 +181,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Salas/EditarSala'
+              $ref: '#/components/schemas/EditarSala'
       responses:
         '200':
-          description: Sala atualizada com sucesso
+          description: Sala editada com sucesso
+        '404':
+          description: Sala não encontrada
 
-  /rooms/remove/{room_id}:
+ 
+  /Salas/RemoverSala/{room_id}:
     delete:
-      summary: Remoção de uma sala
+      summary: Remover de uma sala
       parameters:
         - name: room_id
           in: path
@@ -187,10 +201,12 @@ paths:
       responses:
         '204':
           description: Sala removida com sucesso
+        '404':
+          description: Sala não encontrada
 
 components:
   schemas:
-    UserRegistration:
+    Registro:
       type: object
       properties:
         username:
@@ -207,16 +223,7 @@ components:
         - email
         - password
 
-    PasswordRecovery:
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-      required:
-        - email
-
-    UserLogin:
+    Login:
       type: object
       properties:
         email:
@@ -229,7 +236,16 @@ components:
         - email
         - password
 
-        ReservationCreation:
+    RecuperarPassword:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+        - email
+
+    Reservar:
       type: object
       properties:
         room_id:
@@ -255,6 +271,66 @@ components:
         - start_time
         - end_time
 
+    EditarReservas:
+      type: object
+      properties:
+        room_id:
+          type: string
+        date:
+          type: string
+          format: date
+        start_time:
+          type: string
+          pattern: "^([01]?[0-9]|2[0-3]):[0-5][0-9]$"
+        end_time:
+          type: string
+          pattern: "^([01]?[0-9]|2[0-3]):[0-5][0-9]$"
+        description:
+          type: string
+          maxLength: 255
+      required:
+        - room_id
+        - date
+        - start_time
+        - end_time
 
+    NovaSala:
+      type: object
+      properties:
+        room_name:
+          type: string
+          minLength: 1
+        capacity:
+          type: integer
+          minimum: 1
+        equipment:
+          type: array
+          items:
+            type: string
+      required:
+        - room_name
+        - capacity
 
+    EditarSala:
+      type: object
+      properties:
+        room_name:
+          type: string
+        capacity:
+          type: integer
+          minimum: 1
+        equipment:
+          type: array
+          items:
+            type: string
+      required:
+        - room_name
+        - capacity
 
+    RemoverSala:
+      type: object
+      properties:
+        room_id:
+          type: string
+      required:
+        - room_id
