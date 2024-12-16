@@ -1,3 +1,4 @@
+
 exports.registrarUsuario = (req, res) => {
     const { username, email, password } = req.body; 
     try {
@@ -17,23 +18,35 @@ exports.registrarUsuario = (req, res) => {
     }
   };
   
-  exports.loginUsuario = (req, res) => {
+  const jwt = require('jsonwebtoken');
+
+exports.loginUsuario = (req, res) => {
     const { email, password } = req.body;
+
     try {
-      const usuarioAutenticado = {
-        id: 1, 
-        email,
-        token: "fake-jwt-token", 
-      };
-  
-      res.status(200).json({
-        message: "Login efetuado com sucesso",
-        data: usuarioAutenticado,
-      });
+        // Simulação de validação do usuário (credenciais simples)
+        if (email === "admin@example.com" && password === "1234") {
+            // Payload para o token
+            const payload = {
+                email,
+                role: "admin" // Você pode adicionar mais informações aqui
+            };
+
+            // Gerar o token JWT
+            const token = jwt.sign(payload, process.env.JWT_SECRET || "sua_chave_secreta", { expiresIn: "1h" });
+
+            res.status(200).json({
+                message: "Login efetuado com sucesso",
+                token
+            });
+        } else {
+            res.status(401).json({ message: "Credenciais inválidas" });
+        }
     } catch (error) {
-      res.status(500).json({ message: "Erro ao efetuar login", error });
+        res.status(500).json({ message: "Erro ao efetuar login", error });
     }
-  };
+};
+
   
   exports.recuperarSenha = (req, res) => {
     const { email } = req.body; 
